@@ -1,0 +1,14 @@
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "overrides": [
+    {
+      "files": "prisma/seed.ts",
+      "options": {
+        "singleQuote": false,
+        "quoteProps": "preserve",
+        "trailingComma": "none"
+      }
+    }
+  ]
+}

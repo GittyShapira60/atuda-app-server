@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+
+  server:
+    container_name: server
+    image: node:20.15
+    volumes:
+      - .:/app
+    tty: true
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=${DB_CONNECTION}://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}
+    depends_on:
+      - database
+
+  database:
+    container_name: database
+    image: postgres:16.2
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - 5432:5432

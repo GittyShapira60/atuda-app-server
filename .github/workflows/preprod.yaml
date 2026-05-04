@@ -1,0 +1,47 @@
+name: CICD Pipeline For Preprod Environment
+
+on:
+  push:
+    branches:
+      - preprod
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    uses: digitalidf/digitalidf-actions/.github/workflows/build-push-deploy-to-ecr.yaml@v1.3.12
+    with:
+      account_name: 'hr'
+      image: atuda-app-server-preprod
+      enable_latest_tag: false
+      dockerfile: Dockerfile
+      environment: preprod
+
+  update-image-tag:
+    needs: build-and-push
+    uses: digitalidf/digitalidf-actions/.github/workflows/update-image-tag.yaml@main
+    with:
+      repository: 'atuda-manifests'
+      path_to_deployment: 'manifests/preprod/atuda-bakashot/server-deployment.yaml'
+      branch_to_merge: 'master'
+    secrets:
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+  build-and-push-seed-image:
+    needs: update-image-tag
+    uses: digitalidf/digitalidf-actions/.github/workflows/build-push-deploy-to-ecr.yaml@v1.3.12
+    with:
+      account_name: 'hr'
+      image: atuda-app-seed-preprod
+      enable_latest_tag: false
+      dockerfile: Dockerfile.seed
+      environment: preprod
+
+  update-seed-image-tag:
+    needs: build-and-push-seed-image
+    uses: digitalidf/digitalidf-actions/.github/workflows/update-image-tag.yaml@main
+    with:
+      repository: 'atuda-manifests'
+      path_to_deployment: 'manifests/jobs/preprod-server-seed-job.yaml'
+      branch_to_merge: 'master'
+    secrets:
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

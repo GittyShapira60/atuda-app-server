@@ -1,0 +1,23 @@
+ARG node_ver=18-alpine
+FROM node:${node_ver}
+
+RUN addgroup -S user && adduser -S user -G user
+
+RUN apk add --no-cache \
+        openssl
+# Create app directory
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+RUN npm install 
+
+COPY prisma ./prisma
+
+RUN npm install -g prisma
+RUN npm install -g ts-node
+RUN npm install -g @types/node
+RUN npx prisma generate
+
+USER user
+
+CMD ["prisma", "db", "seed"]

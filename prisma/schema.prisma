@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RequestType {
+  id              String    @id
+  name            String
+  description     String?
+  duration        Int
+  stagesFlow      Json      @map("stages_flow")
+  reasonRequired  Boolean   @default(true)
+  isAvailable     Boolean   @default(true)
+  excludeReasons  String[]  @default([])
+  declarationText String    @map("declaration_text")
+  requests        Request[]
+}
+
+model Stage {
+  key         String  @id @unique
+  header      String
+  title       String?
+  description String?
+  schema      Json?
+  options     Json?
+}
+
+model selectItem {
+  listName String @map("list_name")
+  name     String
+  id       String
+
+  @@id([name, listName])
+}
+
+model Request {
+  id               String           @id
+  requestType      RequestType      @relation(fields: [requestTypeId], references: [id])
+  requestTypeId    String           @map("request_type_id")
+  userIdentity     String           @map("user_identity")
+  createdOn        DateTime         @map("created_on")
+  status           String
+  lastChangeStatus DateTime         @map("last_change_status")
+  requestDetails   RequestDetails[]
+  wasSent          Boolean          @default(false) @map("was_sent")
+  wasReceived      Boolean          @default(false) @map("was_received")
+  amount           Int              @default(0)
+}
+
+model RequestDetails {
+  id        Int     @id @default(autoincrement())
+  request   Request @relation(fields: [requestId], references: [id])
+  requestId String  @map("request_id")
+  fieldName String  @map("field_name")
+  fieldType String  @map("field_type")
+  data      String?
+}
+
+model Users {
+  id Int    @id @default(autoincrement())
+  tz String @unique @map("tz")
+}
