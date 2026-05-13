@@ -6,10 +6,9 @@ This project is the server part of the Full Stack application that allows reserv
 
 ## 💻 Technologies Used
 
--   **Backend:** NestJS
--   **Frontend:** Vue3
--   **DB:** Postgresql
-
+- **Backend:** NestJS
+- **Frontend:** Vue3
+- **DB:** Postgresql
 
 ## 🔧 Installation
 
@@ -38,10 +37,10 @@ npm install
 npx prisma migrate dev
 
 # Run seeds
-npx prisma db seed 
+npx prisma db seed
 
 # Start process
 npm run start:dev
-```  
+```
 
 Your server will be accessible at http://localhost:3000.
