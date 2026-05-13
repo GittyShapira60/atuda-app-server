@@ -27,7 +27,10 @@ export class RequestsController {
     @Req() req: LoggedInRequest,
     @Res() res: Response,
   ) {
-    await this.requestsService.create(req.user?.tz ?? '213884489', createRequestDto);
+    await this.requestsService.create(
+      req.user?.tz ?? '213884489',
+      createRequestDto,
+    );
     res.status(HttpStatus.CREATED).send();
   }
 }
