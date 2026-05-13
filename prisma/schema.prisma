@@ -18,6 +18,7 @@ model RequestType {
   excludeReasons  String[]  @default([])
   declarationText String    @map("declaration_text")
   requests        Request[]
+  Is_Original     Boolean   @default(true)
 }
 
 model Stage {
