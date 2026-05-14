@@ -18,7 +18,6 @@ model RequestType {
   excludeReasons  String[]  @default([])
   declarationText String    @map("declaration_text")
   requests        Request[]
-  Is_Original     Boolean   @default(true)
 }
 
 model Stage {
@@ -50,6 +49,7 @@ model Request {
   wasSent          Boolean          @default(false) @map("was_sent")
   wasReceived      Boolean          @default(false) @map("was_received")
   amount           Int              @default(0)
+  Is_Original     Boolean   @default(true)
 }
 
 model RequestDetails {
