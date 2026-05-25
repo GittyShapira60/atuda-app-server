@@ -235,7 +235,35 @@ export class RequestsService {
       throw new BadRequestException(error);
     }
   }
+
+   async deleteFile(requestId: string, detailId: number): Promise<void> {
+    try {
+      const deleted = await this.prisma.requestDetails.deleteMany({
+        where: {
+          id: detailId,
+          requestId,
+        },
+      });
+
+      if (deleted.count === 0) {
+        throw new BadRequestException('Detail not found for deletion');
+      }
+
+      await this.prisma.request.update({
+        where: { id: requestId },
+        data: {
+          lastChangeStatus: new Date(
+            Date.now() + 2 * 60 * 60 * 1000,
+          ).toISOString(),
+        },
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException(error);
+    }
+  }
   
 
-  
 }

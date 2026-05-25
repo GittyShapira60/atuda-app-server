@@ -22,14 +22,6 @@ export class RequestsController {
     return await this.requestsService.requests(req.user?.tz ?? '213884489');
   }
 
-  @Get(':requestId')
-  async getNumOfFilles(
-    @Param('requestId') requestId: string,
-    @Req() req: LoggedInRequest,
-  ) {
-    return await this.requestsService.requests(req.user?.tz ?? '213884489');
-  }
-
   @Post()
   async create(
     @Body() createRequestDto: CreateRequestDto,
@@ -43,7 +35,7 @@ export class RequestsController {
     res.status(HttpStatus.CREATED).send();
   }
 
-  @Post(':requestId/files')
+  @Post(':requestId/add-files')
   async addFiles(
     @Param('requestId') requestId: string,
     @Body() requestDetails: JSON,
@@ -56,8 +48,15 @@ export class RequestsController {
     res.status(HttpStatus.CREATED).send();
   }
 
-  
-  
+  @Post(':requestId/delete-file')
+  async deleteFile(
+    @Param('requestId') requestId: string,
+    @Body() body: { detailId: number },
+    @Res() res: Response,
+  ) {
+    await this.requestsService.deleteFile(requestId, body.detailId);
+    res.status(HttpStatus.OK).send();
+  }
  
 }
 

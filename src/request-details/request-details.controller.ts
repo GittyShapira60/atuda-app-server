@@ -19,13 +19,5 @@ export class RequestDetailsController {
     return await this.requestDetailsService.requestDetails(requestId);
   }
 
-  @Post(':requestId/delete')
-  async deleteFile(
-    @Param('requestId') requestId: string,
-    @Body() body: { detailId: number },
-    @Res() res: Response,
-  ) {
-    await this.requestDetailsService.deleteFile(requestId, body.detailId);
-    res.status(HttpStatus.OK).send();
-  }
+  
 }
