@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   Res,
+  Param,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { LoggedInRequest } from './../authentication/interface/auth.interface';
@@ -21,13 +22,42 @@ export class RequestsController {
     return await this.requestsService.requests(req.user?.tz ?? '213884489');
   }
 
+  @Get(':requestId')
+  async getNumOfFilles(
+    @Param('requestId') requestId: string,
+    @Req() req: LoggedInRequest,
+  ) {
+    return await this.requestsService.requests(req.user?.tz ?? '213884489');
+  }
+
   @Post()
   async create(
     @Body() createRequestDto: CreateRequestDto,
     @Req() req: LoggedInRequest,
     @Res() res: Response,
   ) {
-    await this.requestsService.create(req.user?.tz ?? '213884489', createRequestDto);
+    await this.requestsService.create(
+      req.user?.tz ?? '213884489',
+      createRequestDto,
+    );
     res.status(HttpStatus.CREATED).send();
   }
+
+  @Post(':requestId/files')
+  async addFiles(
+    @Param('requestId') requestId: string,
+    @Body() requestDetails: JSON,
+    @Res() res: Response,
+  ) {
+    await this.requestsService.addFiles(
+      requestId,
+      requestDetails,
+    );
+    res.status(HttpStatus.CREATED).send();
+  }
+
+  
+  
+ 
 }
+
