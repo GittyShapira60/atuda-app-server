@@ -4,6 +4,10 @@ import { FileArchiveService } from './../file-archive/file-archive.service';
 import { RequestsStagesService } from './../requests-stages/requests-stages.service';
 import { PrismaService } from '../prisma.service';
 import { SelectItemsService } from '../select-items/select-items.service';
+import {
+  SUPPLEMENTAL_FILES_FIELD,
+  SUPPLEMENTAL_FILES_TITLE,
+} from '../requests/constants/supplemental-files.constant';
 
 @Injectable()
 export class RequestDetailsService {
@@ -23,6 +27,7 @@ export class RequestDetailsService {
       });
       return await Promise.all(
         details.map((detail) => ({
+          id: detail.id,
           name: detail.fieldName,
           type: detail.fieldType,
           data: detail.data,
@@ -107,6 +112,8 @@ export class RequestDetailsService {
 
   async createFinalObject(property, detail) {
     const schemaProp = property?.properties[detail.name];
+    const isSupplemental =
+      detail.name === SUPPLEMENTAL_FILES_FIELD && detail.type === 'file';
     const value =
       schemaProp?.layout?.slots?.component === 'date-range-picker'
         ? this.formatDateRange(detail.data)
@@ -115,10 +122,15 @@ export class RequestDetailsService {
           : detail.data;
 
     return {
-      title: schemaProp?.title || (detail.type === 'file' ? null : detail.name),
+      detailId: detail.id,
+      fieldName: detail.name,
+      title: isSupplemental
+        ? SUPPLEMENTAL_FILES_TITLE
+        : schemaProp?.title || (detail.type === 'file' ? null : detail.name),
       value,
       textarea: schemaProp?.layout?.slots?.component === 'textarea',
       file: detail.type === 'file',
+      deletable: isSupplemental,
     };
   }
 
@@ -191,4 +203,7 @@ export class RequestDetailsService {
     const details = await this.getDetails(requestId);
     return await this.prepareDetails(properties, details);
   }
+
+ 
 }
+

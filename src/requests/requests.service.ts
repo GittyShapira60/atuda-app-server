@@ -8,6 +8,7 @@ import { RequestsValidationService } from './requests-validation.service';
 import { v4 as uuidv4 } from 'uuid';
 import { FileArchiveService } from '../file-archive/file-archive.service';
 import { ENV } from './../config';
+import { SUPPLEMENTAL_FILES_FIELD } from './constants/supplemental-files.constant';
 
 @Injectable()
 export class RequestsService {
@@ -201,4 +202,70 @@ export class RequestsService {
       throw new BadRequestException(error);
     }
   }
+
+  async addFiles(requestId: string, requestDetails: JSON): Promise<void> {
+    const request = await this.prisma.request.findUnique({
+      where: { id: requestId },
+      select: { userIdentity: true },
+    });
+    if (!request) {
+      throw new BadRequestException('Request not found');
+    }
+    try {
+      const newDetailsArray = await this.convertJsonToRequestDetails(
+        request.userIdentity,
+        requestDetails,
+      );
+      await this.prisma.request.update({
+        where: { id: requestId },
+        data: {
+          requestDetails: {
+            create: newDetailsArray.map((detail) => ({
+              ...detail,
+              isOrigin: false,
+            })),
+          },
+          isOrigin: false,
+          lastChangeStatus: new Date(
+            new Date().getTime() + 2 * 60 * 60 * 1000,
+          ).toISOString(),
+        },
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException(error);
+    }
+  }
+  
+  async deleteFile(requestId: string, detailId: number): Promise<void> {
+    try {
+      const deleted = await this.prisma.requestDetails.deleteMany({
+        where: {
+          id: detailId,
+          requestId,
+        },
+      });
+
+      if (deleted.count === 0) {
+        throw new BadRequestException('Detail not found for deletion');
+      }
+
+      await this.prisma.request.update({
+        where: { id: requestId },
+        data: {
+          lastChangeStatus: new Date(
+            Date.now() + 2 * 60 * 60 * 1000,
+          ).toISOString(),
+        },
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException(error);
+    }
+  }
+  
 }
