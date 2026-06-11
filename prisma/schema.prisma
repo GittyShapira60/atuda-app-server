@@ -18,6 +18,7 @@ model RequestType {
   excludeReasons  String[]  @default([])
   declarationText String    @map("declaration_text")
   requests        Request[]
+  Is_Original     Boolean   @default(true)
 }
 
 model Stage {
@@ -49,6 +50,7 @@ model Request {
   wasSent          Boolean          @default(false) @map("was_sent")
   wasReceived      Boolean          @default(false) @map("was_received")
   amount           Int              @default(0)
+  isOrigin         Boolean          @default(true)  @map("is_origin")
 }
 
 model RequestDetails {
@@ -58,6 +60,7 @@ model RequestDetails {
   fieldName String  @map("field_name")
   fieldType String  @map("field_type")
   data      String?
+  isOrigin  Boolean @default(true)  @map("is_origin")
 }
 
 model Users {
