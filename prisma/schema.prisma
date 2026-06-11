@@ -59,6 +59,7 @@ model RequestDetails {
   fieldName String  @map("field_name")
   fieldType String  @map("field_type")
   data      String?
+  isOrigin  Boolean @default(true)  @map("is_origin")
 }
 
 model Users {

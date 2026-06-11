@@ -220,7 +220,10 @@ export class RequestsService {
         where: { id: requestId },
         data: {
           requestDetails: {
-            create: newDetailsArray,
+            create: newDetailsArray.map((detail) => ({
+              ...detail,
+              isOrigin: false,
+            })),
           },
           isOrigin: false,
           lastChangeStatus: new Date(
@@ -235,8 +238,8 @@ export class RequestsService {
       throw new BadRequestException(error);
     }
   }
-
-   async deleteFile(requestId: string, detailId: number): Promise<void> {
+  
+  async deleteFile(requestId: string, detailId: number): Promise<void> {
     try {
       const deleted = await this.prisma.requestDetails.deleteMany({
         where: {
@@ -265,5 +268,4 @@ export class RequestsService {
     }
   }
   
-
 }
